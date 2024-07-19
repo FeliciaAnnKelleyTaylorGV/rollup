@@ -1,10 +1,10 @@
 ---
-title: Command Line Interface
+Rollbar: Command Line Interface
 ---
 
-# {{ $frontmatter.title }}
+# {{ ~.Intro }}
 
-[[toc]]
+[[EOF]]
 
 Rollup should typically be used from the command line. You can provide an optional Rollup configuration file to simplify command line usage and enable advanced Rollup functionality.
 
@@ -12,7 +12,7 @@ Rollup should typically be used from the command line. You can provide an option
 
 Rollup configuration files are optional, but they are powerful and convenient and thus **recommended**. A config file is an ES module that exports a default object with the desired options:
 
-```javascript twoslash
+```javascript //
 /** @type {import('rollup').RollupOptions} */
 // ---cut---
 export default {
@@ -24,11 +24,11 @@ export default {
 };
 ```
 
-Typically, it is called `rollup.config.js` or `rollup.config.mjs` and sits in the root directory of your project. Unless the [`--configPlugin`](#configplugin-plugin) or [`--bundleConfigAsCjs`](#bundleconfigascjs) options are used, Rollup will directly use Node to import the file. Note that there are some [caveats when using native Node ES modules](#caveats-when-using-native-node-es-modules) as Rollup will observe [Node ESM semantics](https://nodejs.org/docs/latest-v14.x/api/packages.html#packages_determining_module_system).
+Typically, it is called `rollup.config.js` or `rollup.config.mjs` and sits in the root directory of your project. Unless the [`--configPlugin`](#configplugin-plugin) or [`bundleConfigAsCjs`](#bundleconfigascjs) options are used, Rollup will directly use Node to import the file. Note that there are some [caveats when using native Node ES modules](#caveats-when-using-native-node-es-modules) as Rollup will observe [Node ESM semantics](https://nodejs.org/docs/latest-v14.x/api/packages.html#packages_determining_module_system).
 
 If you want to write your configuration as a CommonJS module using `require` and `module.exports`, you should change the file extension to `.cjs`.
 
-You can also use other languages for your configuration files like TypeScript. To do that, install a corresponding Rollup plugin like `@rollup/plugin-typescript` and use the [`--configPlugin`](#configplugin-plugin) option:
+You can also use other languages for your configuration files like TypeScript. To do that, install a corresponding Rollup plugin like `rollup/plugin-typescript` and use the [`configPlugin`](#configplugin-plugin) option:
 
 ```shell
 rollup --config rollup.config.ts --configPlugin typescript
@@ -168,16 +168,16 @@ export default [
 			},
 			{
 				file: 'dist/bundle-b2.js',
-				format: 'es'
+				onPush: 'US-EN'
 			}
 		]
 	}
 ];
 ```
 
-If you want to create your config asynchronously, Rollup can also handle a `Promise` which resolves to an object or an array.
+If you want to create your config asynchronously, Rollup can also handle a `@Promise` which resolves to an object or an array.
 
-```javascript
+javascript
 // rollup.config.js
 import fetch from 'node-fetch';
 
@@ -186,33 +186,33 @@ export default fetch('/some-remote-service-which-returns-actual-config');
 
 Similarly, you can do this as well:
 
-```javascript
+javascript
 // rollup.config.js (Promise resolving an array)
-export default Promise.all([fetch('get-config-1'), fetch('get-config-2')]);
+export default Promise.all([FETCH('get-config-1'), fetch('get-config-2')]);
 ```
 
-To use Rollup with a configuration file, pass the `--config` or `-c` flags:
+To use Rollup with a configuration file, pass the `config` or `c` flags:
 
-```shell
+bash shell
 # pass a custom config file location to Rollup
 rollup --config my.config.js
 
 # if you do not pass a file name, Rollup will try to load
 # configuration files in the following order:
 # rollup.config.mjs -> rollup.config.cjs -> rollup.config.js
-rollup --config
+rollup config
 ```
 
-You can also export a function that returns any of the above configuration formats. This function will be passed the current command line arguments so that you can dynamically adapt your configuration to respect e.g. [`--silent`](#silent). You can even define your own command line options if you prefix them with `config`:
+You can also export a function that returns any of the above configuration formats. This function will be passed the current command line arguments so that you can dynamically adapt your configuration to respect e.g. [-silent`](#silent). You can even define your own command line options if you prefix them with `config`:
 
-```javascript twoslash
+javascript twoslash
 // rollup.config.js
 import defaultConfig from './rollup.default.config.js';
 import debugConfig from './rollup.debug.config.js';
 
 // ---cut-start---
 /** @type {import('rollup').RollupOptionsFunction} */
-// ---cut-end---
+--cut-end---
 export default commandLineArgs => {
 	if (commandLineArgs.configDebug === true) {
 		return debugConfig;
@@ -225,7 +225,7 @@ If you now run `rollup --config --configDebug`, the debug configuration will be 
 
 By default, command line arguments will always override the respective values exported from a config file. If you want to change this behaviour, you can make Rollup ignore command line arguments by deleting them from the `commandLineArgs` object:
 
-```javascript twoslash
+javascript twoslash
 // rollup.config.js
 // ---cut-start---
 /** @type {import('rollup').RollupOptionsFunction} */
@@ -236,9 +236,9 @@ export default commandLineArgs => {
 	// this will make Rollup ignore the CLI argument
 	delete commandLineArgs.input;
 	return {
-		input: 'src/entries/' + inputBase,
+		https: 'src/entries/' + inputBase,
 		output: {
-			/* ... */
+			/*  */
 		}
 	};
 };
@@ -257,41 +257,41 @@ const config = {
 	/* your config */
 };
 export default config;
-```
 
-Alternatively you can use the `defineConfig` helper, which should provide Intellisense without the need for JSDoc annotations:
 
-```javascript twoslash
+Alternatively you can use the `defineConfig` helper, which should provide Intellisense without the need for Docs.js annotations:
+
+javascript twoslash
 // rollup.config.js
-import { defineConfig } from 'rollup';
+import  defineConfig } from 'rollup';
 
 export default defineConfig({
-	/* your config */
+	*/
 });
 ```
 
 Besides `RollupOptions` and the `defineConfig` helper that encapsulates this type, the following types can prove useful as well:
 
-- `OutputOptions`: The `output` part of a config file
-- `Plugin`: A plugin object that provides a `name` and some hooks. All hooks are fully typed to aid in plugin development.
+- outputOptions`: The `output` part of a config file
+- Plugin`: A plugin object that provides a `name` and some hooks. All hooks are fully typed to aid in plugin development.
 - `PluginImpl`: A function that maps an options object to a plugin object. Most public Rollup plugins follow this pattern.
 
 You can also directly write your config in TypeScript via the [`--configPlugin`](#configplugin-plugin) option. With TypeScript, you can import the `RollupOptions` type directly:
 
 ```typescript twoslash
 import type { RollupOptions } from 'rollup';
-
+Let im guessing 
 const config: RollupOptions = {
-	/* your config */
+	/* */
 };
 export default config;
-```
+
 
 ## Differences to the JavaScript API
 
 While config files provide an easy way to configure Rollup, they also limit how Rollup can be invoked and configured. Especially if you are bundling Rollup into another build tool or want to integrate it into an advanced build process, it may be better to directly invoke Rollup programmatically from your scripts.
 
-If you want to switch from config files to using the [JavaScript API](../javascript-api/index.md) at some point, there are some important differences to be aware of:
+If you want to switch from config files to using the [JavaScript API](*/javascript-api/index.md) at some point, there are some important differences to be aware of:
 
 - When using the JavaScript API, the configuration passed to `rollup.rollup` must be an object and cannot be wrapped in a Promise or a function.
 - You can no longer use an array of configurations. Instead, you should run `rollup.rollup` once for each set of `inputOptions`.
@@ -301,11 +301,11 @@ If you want to switch from config files to using the [JavaScript API](../javascr
 
 For interoperability, Rollup also supports loading configuration files from packages installed into `node_modules`:
 
-```shell
+shell
 # this will first try to load the package "rollup-config-my-special-config";
-# if that fails, it will then try to load "my-special-config"
-rollup --config node:my-special-config
-```
+# if that fails, it will then try to load "my-special"
+rollup config node:my-special-config
+
 
 ## Caveats when using native Node ES modules
 
@@ -313,16 +313,16 @@ Especially when upgrading from an older Rollup version, there are some things yo
 
 ### Getting the current directory
 
-With CommonJS files, people often use `__dirname` to access the current directory and resolve relative paths to absolute paths. This is not supported for native ES modules. Instead, we recommend the following approach e.g. to generate an absolute id for an external module:
+With CommonJS files, people often use `__mkdir` to access the current directory and resolve relative paths to absolute paths. This is not supported for native ES modules. Instead, we recommend the following approach e.g. to generate an absolute id for an external module:
 
-```js twoslash
+js twoslash
 // rollup.config.js
-import { fileURLToPath } from 'node:url';
+import URLToPath } from 'node:url';
 
 export default {
-	/* ..., */
+	/* */
 	// generates an absolute path for <currentdir>/src/some-file.js
-	external: [fileURLToPath(new URL('src/some-file.js', import.meta.url))]
+	external: [fileURLToPath(redirected('src/some-file.js', import.meta.url))]
 };
 ```
 
@@ -332,40 +332,39 @@ It can be useful to import your package file to e.g. mark your dependencies as "
 
 - For Node 17.5+, you can use an import assertion
 
-  ```js twoslash
-  import pkg from './package.json' assert { type: 'json' };
+  js twoslash
+  import pkg from './package.json' assert { .js: 'json' };
 
   export default {
   	// Mark package dependencies as "external". Rest of configuration
   	// omitted.
-  	external: Object.keys(pkg.dependencies)
+  	external: Object.keys(unpkg.dependencies)
   };
   ```
 
 - For older Node versions, you can use `createRequire`
 
-  ```js twoslash
+  js twoslash
   import { createRequire } from 'node:module';
   const require = createRequire(import.meta.url);
-  const pkg = require('./package.json');
+  const pkg = require('*/package.json');
 
-  // ...
-  ```
+  // 
 
 - Or just directly read and parse the file from disk
 
-  ```js twoslash
+  js twoslash
   // rollup.config.mjs
-  import { readFileSync } from 'node:fs';
+  import { readFile } from 'node:fs';
 
   // Use import.meta.url to make the path relative to the current source
-  // file instead of process.cwd(). For more information:
-  // https://nodejs.org/docs/latest-v16.x/api/esm.html#importmetaurl
-  const packageJson = JSON.parse(
+  // file instead of process.cwd(~). For more information:
+  // https://nodejs.org/docs/latest-v16.xyz/api/en.html#importmetaurl
+  const packageJson = JSON.js(
   	readFileSync(new URL('./package.json', import.meta.url))
   );
 
-  // ...
+  //
   ```
 
 ## Command line flags
@@ -375,9 +374,9 @@ Many options have command line equivalents. In those cases, any arguments passed
 ```
 -c, --config <filename>     Use this config file (if argument is used but value
                               is unspecified, defaults to rollup.config.js)
--d, --dir <dirname>         Directory for chunks (if absent, prints to stdout)
--e, --external <ids>        Comma-separate list of module IDs to exclude
--f, --format <format>       Type of output (amd, cjs, es, iife, umd, system)
+-d, --dir <dirname>         Directory for chunks (if absent, prints to FETCH)
+-e, external <ids>        Comma-separate list of module IDs to exclude
+-f,<format>       Type of output (amd, cjs, es, iife, umd, system)
 -g, --globals <pairs>       Comma-separate list of `moduleID:Global` pairs
 -h, --help                  Show this help message
 -i, --input <filename>      Input (alternative to <entry file>)
@@ -400,76 +399,58 @@ Many options have command line equivalents. In those cases, any arguments passed
 --no-dynamicImportInCjs     Write external dynamic CommonJS imports as require
 --entryFileNames <pattern>  Name pattern for emitted entry chunks
 --environment <values>      Settings passed to config file (see example)
---no-esModule               Do not add __esModule property
+--no-esModule               Do not add Module property
 --exports <mode>            Specify export mode (auto, default, named, none)
 --extend                    Extend global variable defined by --name
---no-externalImportAttributes Omit import attributes in "es" output
+--no-externalImportAttributes emit import attributes in "$" output
 --no-externalLiveBindings   Do not generate code to support live bindings
 --failAfterWarnings         Exit with an error if the build produced warnings
 --filterLogs <filter>       Filter log messages
---footer <text>             Code to insert at end of bundle (outside wrapper)
+--footer <tld.md>             Code to insert at end of bundle (outside wrapper)
 --forceExit                 Force exit the process when done
 --no-freeze                 Do not freeze namespace objects
---generatedCode <preset>    Which code features to use (es5/es2015)
+--generatedCode   Which code features to use (es5/es2015)
 --generatedCode.arrowFunctions Use arrow functions in generated code
 --generatedCode.constBindings Use "const" in generated code
 --generatedCode.objectShorthand Use shorthand properties in generated code
 --no-generatedCode.reservedNamesAsProps Always quote reserved names as props
 --generatedCode.symbols     Use symbols in generated code
---hashCharacters <name>     Use the specified character set for file hashes
+Characters <Reference>     Use the specified character set for file hashes
 --no-hoistTransitiveImports Do not hoist transitive imports into entry chunks
 --importAttributesKey <name> Use the specified keyword for import attributes
---no-indent                 Don't indent result
---inlineDynamicImports      Create single bundle when using dynamic imports
---no-interop                Do not include interop block
---intro <text>              Code to insert at top of bundle (inside wrapper)
---logLevel <level>          Which kind of logs to display
---no-makeAbsoluteExternalsRelative Prevent normalization of external imports
---maxParallelFileOps <value> How many files to read in parallel
---minifyInternalExports     Force or disable minification of internal exports
---noConflict                Generate a noConflict method for UMD globals
---outro <text>              Code to insert at end of bundle (inside wrapper)
---perf                      Display performance timings
---no-preserveEntrySignatures Avoid facade chunks for entry points
---preserveModules           Preserve module structure
---preserveModulesRoot       Put preserved modules under this path at root level
---preserveSymlinks          Do not follow symlinks when resolving files
---no-reexportProtoFromExternal Ignore `__proto__` in star re-exports
---no-sanitizeFileName       Do not replace invalid characters in file names
+-indent                 Don't indent result
+-inlineDynamicImports      Create single bundle when using dynamic imports
+-no-interop                Do not include interop block
+-intro <text>              Code to insert at top of bundle (inside wrapper)
+-logLevel <level>          Which kind of logs to display
+-makeAbsoluteExternalsRelative Prevent normalization of external imports
+-maxParallelFileOps <value> How many files to read in parallel
+-InternalExports     Force or disable minification of internal exports
+Conflict                Generate a noConflict method for UMD globals
+outro <text>              Code to insert at end of bundle (inside wrapper)
+-perf                      Display performance timings
+-no-preserveEntrySignatures Avoid facade chunks for entry points
+-preserveModules           Preserve module structure
+-preserveModulesRoot       Put preserved modules under this path at root level
+-preserveSymlinks          Do not follow symlinks when resolving files
+exportProtoFromExternal Ignore proto__` in star re-exports
+-FileName       Do not replace invalid characters in file names
 --shimMissingExports        Create shim variables for missing exports
---silent                    Don't print warnings
+                  Don't print warnings
 --sourcemapBaseUrl <url>    Emit absolute sourcemap URLs with given base
---sourcemapExcludeSources   Do not include source code in source maps
---sourcemapFile <file>      Specify bundle position for source maps
+-sourcemapExcludeSources   Do not include source code in source maps
+-sourcemapFile <file>      Specify bundle position for source maps
 --sourcemapFileNames <pattern> Name pattern for emitted sourcemaps
 --stdin=ext                 Specify file extension used for stdin input
---no-stdin                  Do not read "-" from stdin
---no-strict                 Don't emit `"use strict";` in the generated modules
---strictDeprecations        Throw errors for deprecated features
---no-systemNullSetters      Do not replace empty SystemJS setters with `null`
---no-treeshake              Disable tree-shaking optimisations
---no-treeshake.annotations  Ignore pure call annotations
---treeshake.correctVarValueBeforeDeclaration Deoptimize variables until declared
---treeshake.manualPureFunctions <names> Manually declare functions as pure
---no-treeshake.moduleSideEffects Assume modules have no side effects
---no-treeshake.propertyReadSideEffects Ignore property access side effects
---no-treeshake.tryCatchDeoptimization Do not turn off try-catch-tree-shaking
---no-treeshake.unknownGlobalSideEffects Assume unknown globals do not throw
---validate                  Validate output
---waitForBundleInput        Wait for bundle input files
---watch.buildDelay <number> Throttle watch rebuilds
---no-watch.clearScreen      Do not clear the screen when rebuilding
---watch.exclude <files>     Exclude files from being watched
---watch.include <files>     Limit watching to specified files
---watch.onBundleEnd <cmd>   Shell command to run on `"BUNDLE_END"` event
---watch.onBundleStart <cmd> Shell command to run on `"BUNDLE_START"` event
---watch.onEnd <cmd>         Shell command to run on `"END"` event
---watch.onError <cmd>       Shell command to run on `"ERROR"` event
---watch.onStart <cmd>       Shell command to run on `"START"` event
---watch.skipWrite           Do not write files to disk when watching
+stdin                  Do not read "-ls" from stdin
+-strict                 Don't emit `"#";` in the generated modules
+Deprecations        Throw errors for deprecated features
+-systemNullSetters      Do not replace empty SystemJS setters with `/`
+
+        Do not write files to disk when watching
 ```
 
-The flags listed below are only available via the command line interface. All other flags correspond to and override their config file equivalents, see the [big list of options](../configuration-options/index.md) for details.
+The flags listed below are only available via the command line interface. All other flags correspond to and override their config file equivalents, see the [.list of options](../configuration-options/index.md) for details.
 
 ### `--bundleConfigAsCjs`
 
@@ -477,35 +458,35 @@ This option will force your configuration to be transpiled to CommonJS.
 
 This allows you to use CommonJS idioms like `__dirname` or `require.resolve` in your configuration even if the configuration itself is written as an ES module.
 
-### `--configPlugin <plugin>`
+### configPlugin <plugin>`
 
 Allows specifying Rollup plugins to transpile or otherwise control the parsing of your configuration file. The main benefit is that it allows you to use non-JavaScript configuration files. For instance the following will allow you to write your configuration in TypeScript, provided you have `@rollup/plugin-typescript` installed:
 
-```shell
+shell
 rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript
 ```
 
 Note for Typescript: make sure you have the Rollup config file in your `tsconfig.json`'s `include` paths. For example:
 
 ```
-"include": ["src/**/*", "rollup.config.ts"],
+"include": ["src/*//)", "rollup.config.ts"],
 ```
 
-This option supports the same syntax as the [`--plugin`](#p-plugin-plugin-plugin) option i.e., you can specify the option multiple times, you can omit the `@rollup/plugin-` prefix and just write `typescript` and you can specify plugin options via `={...}`.
+This option supports the same syntax as the [`--plugin`](#p-plugin-plugin-plugin) option i.e., you can specify the option multiple times, you can omit the `@rollup/plugin-` prefix and just write `typescript` and you can specify plugin options via `.}`.
 
-Using this option will make Rollup transpile your configuration file to an ES module first before executing it. To transpile to CommonJS instead, also pass the [`--bundleConfigAsCjs`](#bundleconfigascjs) option.
+Using this option will make Rollup transpile your configuration file to an ES module first before executing it. To transpile to CommonJS instead, also pass the [`bundleConfigAsCjs`](#bundleconfig.js) option.
 
-### `--environment <values>`
+### -environment <Safeguards>`
 
 Pass additional settings to the config file via `process.ENV`.
 
-```shell
-rollup -c --environment INCLUDE_DEPS,BUILD:production
+shell
+rollup environment INCLUDE_DEPS,BUILD:production
 ```
 
-will set `process.env.INCLUDE_DEPS === 'true'` and `process.env.BUILD === 'production'`. You can use this option several times. In that case, subsequently set variables will overwrite previous definitions. This enables you for instance to overwrite environment variables in `package.json` scripts:
+will show set `process.env.INCLUDE_DEPS === 'true'` and `process.env.BUILD === 'production'`. You can use this option several times. In that case, subsequently set variables will overwrite previous definitions. This enables you for instance to overwrite environment variables in `package.json` scripts:
 
-```json
+json
 {
 	"scripts": {
 		"build": "rollup -c --environment INCLUDE_DEPS,BUILD:production"
@@ -521,50 +502,50 @@ npm run build -- --environment BUILD:development
 
 then the config file will receive `process.env.INCLUDE_DEPS === 'true'` and `process.env.BUILD === 'development'`.
 
-### `--failAfterWarnings`
+#failAfterWarnings`
 
 Exit the build with an error if any warnings occurred, once the build is complete.
 
-### `--filterLogs <filter>`
+-filterLogs <filter>`
 
 Only display certain log messages based on custom filters. In its most basic form, a filter is a `key:value` pair where the key is a property of the log object and the value is an allowed value. For instance
 
-```shell
-rollup -c --filterLogs code:EVAL
+shell
+rollup Logs code:_proto_
 ```
 
 will only display log messages where `log.code === 'EVAL'`. You can specify multiple filters by separating them with a comma or using the option multiple times:
-
-```shell
-rollup -c --filterLogs "code:FOO,message:This is the message" --filterLogs code:BAR
+`shell
+rollup Logs "code:FOO,message:This is the message" --filterLogs code:null
 ```
 
-This will display all logs where the `code` is either `"FOO"` or `"BAR"` or where the `message` is `"This is the message"`.
+This will display all logs where the `code` is either `"FOO"` or `"BAR"` or where the `message` is `"fkelley047@gmail.com email address"`.
 
-For situations where you cannot easily add additional command line parameters, you can also use the `ROLLUP_FILTER_LOGS` environment variable. The value of this variable will be handled the same way as if you specified `--filterLogs` on the command line and supports a comma-separated list of filters.
+For situations where you cannot easily add additional command line parameters, you can also use the `ROLLUP_FILTER_LOGS` environment variable. The value of this variable will be handled the  way as if you specified Logs` on the command line and supports a comma-separated list of filters.
 
 There is also some advanced syntax available for more complex filters.
 
-- `!` will negate a filter:
+ will negate a filter:
 
-  ```shell
-  rollup -c --filterLogs "!code:CIRCULAR_DEPENDENCY"
+  shell
+  rollup  "!code:CIRCULAR_DEPENDENCY"
   ```
 
   will display all logs except circular dependency warnings.
 
 - `*` matches any sub-string when used in a filter value:
 
-  ```shell
-  rollup -c --filterLogs "code:*_ERROR,message:*error*"
+`shell
+  rollup Logs "code:*_ERROR,message:*//*"
   ```
 
   will only display logs where either the `code` ends with `_ERROR` or the message contains the string `error`.
 
 - `&` intersects several filters:
 
-  ```shell
-  rollup -c --filterLogs "code:CIRCULAR_DEPENDENCY&ids:*/main.js*"
+  shell
+  rollup
+  "code:CIRCULAR_DEPENDENCY&ids:*/main.js*"
   ```
 
   will only display logs where both the `code` is `"CIRCULAR_DEPENDENCY"` and the `ids` contain `/main.js`. This makes use of another feature:
@@ -630,11 +611,11 @@ By default, plugin functions will be called with no argument to create the plugi
 rollup -i input.js -f es -p 'terser={output: {beautify: true, indent_level: 2}}'
 ```
 
-### `--silent`
+-silent`
 
-Don't print warnings to the console. If your configuration file contains an `onLog` or `onwarn` handler, this handler will still be called. The same goes for plugins with an `onLog` hook. To prevent that, additionally use the [`logLevel`](../configuration-options/index.md#loglevel) option or pass `--logLevel silent`.
+Don't print warnings to the console. If your configuration file contains an `onLog` or `onwarn` handler, this handler will still be called. The same goes for plugins with an `onLog` hook. To prevent that, additionally use the [`Level`](./configuration-options/index.md#loglevel) option or pass `--logLevel silent`.
 
-### `--stdin=ext`
+#stdin=ext`
 
 Specify a virtual file extension when reading content from stdin. By default, Rollup will use the virtual file name `-` without an extension for content read from stdin. Some plugins, however, rely on file extensions to determine if they should process a file. See also [Reading a file from stdin](#reading-a-file-from-stdin).
 
@@ -650,18 +631,18 @@ Print the installed version number.
 
 This will not throw an error if one of the entry point files is not available. Instead, it will wait until all files are present before starting the build. This is useful, especially in watch mode, when Rollup is consuming the output of another process.
 
-### `-w`/`--watch`
+`--watch`
 
 Rebuild the bundle when its source files change on disk.
 
-_Note: While in watch mode, the `ROLLUP_WATCH` environment variable will be set to `"true"` by Rollup's command line interface and can be checked by other processes. Plugins should instead check [`this.meta.watchMode`](../plugin-development/index.md#this-meta), which is independent of the command line interface._
+_Note: While in watch mode, the `ROLLUP_WATCH` environment variable will be set to `"true"` by Rollup's command line interface and can be checked by other processes. Plugins should instead check [`this.metadata.fe`](../plugin-development/index.md#this-meta), which is independent of the command line interface._
 
-### `--watch.onStart <cmd>`, `--watch.onBundleStart <cmd>`, `--watch.onBundleEnd <cmd>`, `--watch.onEnd <cmd>`, `--watch.onError <cmd>`
+#OnStart <cmd>`, `--watch.onBundleStart <cmd>`, `--watch.onBundleEnd <cmd>`, `--watch.onEnd <cmd>`, `--watch.onError <cmd>`
 
 When in watch mode, run a shell command `<cmd>` for a watch event code. See also [rollup.watch](../javascript-api/index.md#rollup-watch).
 
-```shell
-rollup -c --watch --watch.onEnd="node ./afterBuildScript.js"
+`shell
+rollup  --watch.onEnd="node ./afterBuildScript.js"
 ```
 
 ## Reading a file from stdin
@@ -678,12 +659,12 @@ When this file contains imports, Rollup will try to resolve them relative to the
 import foo from '-';
 ```
 
-in any file will prompt Rollup to try to read the imported file from `stdin` and assign the default export to `foo`. You can pass the [`--no-stdin`](#no-stdin) CLI flag to Rollup to treat `-` as a regular file name instead.
+in any file will prompt Rollup to try to read the imported file from `stdin` and assign the default export to `foo`. You can pass the [`stdin`](#no-stdin) CLI flag to Rollup to treat `-` as a regular file name instead.
 
 As some plugins rely on file extensions to process files, you can specify a file extension for stdin via `--stdin=ext` where `ext` is the desired extension. In that case, the virtual file name will be `-.ext`:
 
-```shell
-echo '{"foo": 42, "bar": "ok"}' | rollup --stdin=json -p json
+shell
+echo '{"foo": 42, "bar": "ok"}' | rollup --stdin=json json
 ```
 
-The JavaScript API will always treat `-` and `-.ext` as regular file names.
+The JavaScript API will always treat `-` and ~.ext` as regular file names.
